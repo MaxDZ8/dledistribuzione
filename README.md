@@ -29,7 +29,7 @@ Una cosa che può sembrare strana: vorrei poter scrivere che:
 
 > il programma fa una serie di click e produce il risultato corrispondente all'usare il bottone "Scarica il dettaglio del quarto d'ora"
 
-Ma a sorpresa, e-distribuzione non invia quel file. `dl_quarters.py` produce in uscita esattamente ciò che i server e-distribuzione inviano al browser. Per farlo, si presenta ai server e-distribuzione come il vostro browser ha appena fatto. Questo significa che bisogna fornire **informazioni riservate** che vanno estratte dallo stato del browser. Il risultato è l'automazione del processo riutilizzando le informazioni di login ed OTP inserite.
+Ma a sorpresa, e-distribuzione non invia quel file. `dl_quarters.py` produce in uscita esattamente ciò che i server e-distribuzione inviano al browser. Per farlo, si presenta ai server e-distribuzione come il vostro browser ha appena fatto. Questo significa che bisogna fornire **informazioni riservate** che vanno estratte dallo stato del browser. Il programma riutilizza le informazioni di login ed OTP inserite nel browser per generare le sue richieste.
 
 1. Aprire i _developer tools_ del browser; spesso è sufficiente premere F12 sulla tastiera;
 2. Cercare la tab relativa al traffico di rete, generalmente "Network"
@@ -53,13 +53,12 @@ Per quanto riguarda la seconda coppia di valori, spostarsi sulla sotto-tab "rich
 ![Dove trovare aura.token ed aura.context.value](docimages/edist_credentials-from-request.png)
 
 
-<div style="background-color:#FF5555AA">
-<strong style='font-size:200%'>ATTENZIONE!</strong><br>
-I campi indicati sono <strong>credenziali d'accesso</strong> associate alla vostra attività.<br>
-Manteneteli al sicuro. Non forniteli a terze parti.<br>
-<br>
-Il programma ne mantiene una copia in memoria per il solo tempo necessario all'esecuzione.
-</div>
+> ⚠️ **ATTENZIONE: DATI RISERVATI**
+>
+> I campi indicati sono **credenziali d'accesso** associate alla vostra attività. Trattateli come una password.
+> Manteneteli al sicuro. Non forniteli a terze parti.
+>
+> Il programma ne mantiene una copia in memoria per il solo tempo necessario all'esecuzione.
 
 ## Esecuzione
 
