@@ -13,6 +13,8 @@ Il che ci porta a queste utility. Spero che aiuteranno a migliorare la comprensi
 
 # `dl_quarters.py`
 
+> _Intento:_
+>
 > Scarica i dati da e-distribuzione come farebbe un browser.
 
 Partendo dalla pagina principale di e-distribuzione, cliccando sulla sezione "Le mie misure"
@@ -29,7 +31,7 @@ Una cosa che può sembrare strana: vorrei poter scrivere che:
 
 > il programma fa una serie di click e produce il risultato corrispondente all'usare il bottone "Scarica il dettaglio del quarto d'ora"
 
-Ma a sorpresa, e-distribuzione non invia quel file. `dl_quarters.py` produce in uscita esattamente ciò che i server e-distribuzione inviano al browser. Per farlo, si presenta ai server e-distribuzione come il vostro browser ha appena fatto. Questo significa che bisogna fornire **informazioni riservate** che vanno estratte dallo stato del browser. Il programma riutilizza le informazioni di login ed OTP inserite nel browser per generare le sue richieste.
+Ma a sorpresa, **e-distribuzione non invia quel file**. `dl_quarters.py` produce in uscita esattamente ciò che i server e-distribuzione inviano al browser. Per farlo, si presenta ai server e-distribuzione come il vostro browser ha appena fatto. Questo significa che bisogna fornire **informazioni riservate** che vanno estratte dallo stato del browser. Il programma riutilizza le informazioni di login ed OTP inserite nel browser per generare le sue richieste.
 
 1. Aprire i _developer tools_ del browser; spesso è sufficiente premere F12 sulla tastiera;
 2. Cercare la tab relativa al traffico di rete, generalmente "Network"
