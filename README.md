@@ -104,3 +104,53 @@ Per ciascuna curva richiesta crea un file <span style="background-color:AAAAFF88
 Usando l'opzione `--no-pod-prefix` si può omettere il codice POD da ciascun nome.
 
 Il programma scrive a console (su <em>stdout</em>) una riga per ciascun file creato; tutto il resto sono informazioni scritte su <em>stderr</em>.
+
+# `quarters_to_csv.py`
+Nello scaricare i dati abbiamo avuto una sorpresa sgradita: i dati ottenuti non sono quelli che avremmo potuto scaricare dal sito!
+!["Scarica il dettaglio del quarto d'ora"](docimages/edist_dl_quarters.webp)
+
+Attorno a questi file di dettaglio dei quarti d'ora si è aggregata un'aura quasi mistica. Generalmente considerati la sorgente della verità sono in realtà prodotti all'interno della pagina web di e-distribuzione, in locale sulla vostra macchina a seguire lo scaricamento.
+
+Lo script `quarters_to_csv.py` converte i dati scaricati in un formato _simile_ (di default) o identico (usando `--original-style`).
+
+> 🛈 **Nota: ora legale e solare**
+>
+> Il numero di righe nei file ottenuti è variabile. Ad esempio
+> - nella notte tra sabato 25 ottobre 2025 e domenica 26 alle ore 03:00 le lancette sono state spostate indietro di un'ora
+>     1. quindi domenica 26 conta un'ora in più
+>     2. nel file e-distribuzione compaiono due righe 26/10/2025
+> - nella notte tra sabato 28 marzo 2026 ed domenica 29 alle ore 02:00 le lancette sono state spostate in avanti di un'ora
+>     1. poco male: il file presenta delle celle a 0 a riempire i quarti d'ora inesistenti
+> - ricordatevene nelle elaborazioni a seguire.
+
+## Esecuzione
+
+Nella sua forma più semplice, si potrebbe scrivere a mano il nome dei file json ottenuti in precedenza:
+```
+python3 quarters_to_csv.py 2026-03_attiva_imm.json 2026-03_attiva_prel.json
+```
+&Egrave; tedioso e soggetto a facili errori. Se avete tutti i file in una cartella potete sfruttare la linea di comando per selezionare i files con meno preoccupazioni:
+
+```
+python3 quarters_to_csv.py *json
+```
+O meglio ancora visto che `dl_quarters` scrive a console i nomi dei files che crea:
+```
+python3 dl_quarters.py | python3 quarters_to_csv.py
+```
+
+## Parametri aggiuntivi
+
+L'unico parametro è `--original-style`. Normalmente lo script emette un file csv identico nei contenuti a quello che avremmo scaricato da e-distribuzione ma leggermente più semplice da gestire.
+Indicando questo parametro, il file .csv ottenuto dovrebbe essere identico byte-per-byte a quelli non-proprio-scaricati ufficialmente.
+
+| Caratteristica | Output predefinito | `--original-style` |
+|---|---|---|
+| **Formato della data** | `YYYY-MM-DD`<br>(es. `2025-10-26`) | `DD/MM/YYYY`<br>(es. `26/10/2025`) |
+| **Virgolette sulle righe** | Omesse se possibile | Ogni cella dati racchiusa tra virgolette, come nell’originale |
+| **Punto e virgola finale** | Assente | Presente, come nell'originale |
+
+In entrambi i casi
+- la riga d'intestazione è priva di virgolette, come nell'originale;
+- il separatore di campo è `;`
+- il separatore decimale è `,` (italiano)
