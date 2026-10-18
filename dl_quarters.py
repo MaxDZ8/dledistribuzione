@@ -25,7 +25,7 @@ def print_stderr(*args: object, **kwargs: Any) -> None:
 @dataclass
 class SessionCredentials:
     """Salesforce session credentials extracted from browser."""
-    sid: str
+    cookies: str
     aura_token: str
     aura_context: str
     user_agent: str
@@ -38,7 +38,6 @@ class PreparedRequest:
     url: str
     data: dict[str, str]
     headers: dict[str, str]
-    cookies: dict[str, str]
 
 
 # Token mappings and conversions
@@ -144,11 +143,6 @@ def prompt_for_credentials() -> SessionCredentials:
     if not cookie_header:
         raise ValueError("Cookie header is required")
     
-    try:
-        sid = extract_from_cookie_header(cookie_header, "sid")
-    except ValueError as e:
-        raise ValueError(f"Failed to extract sid: {e}")
-    
     page_scope_id = input(
         "Enter x-sfdc-page-scope-id header (from request headers): "
     ).strip()
@@ -170,7 +164,7 @@ def prompt_for_credentials() -> SessionCredentials:
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0"
     
     return SessionCredentials(
-        sid=sid,
+        cookies=cookie_header,
         aura_token=aura_token,
         aura_context=aura_context,
         user_agent=user_agent,
@@ -482,13 +476,10 @@ def build_request(
         "Sec-CH-UA": '"Opera";v="127", "Chromium";v="143", "Not A(Brand";v="24"',
         "Sec-CH-UA-Mobile": "?0",
         "Sec-CH-UA-Platform": '"Windows"',
+        "Cookie": credentials.cookies
     }
     
-    cookies = {
-        "sid": credentials.sid,
-    }
-    
-    return PreparedRequest(url=url, data=form_data, headers=headers, cookies=cookies)
+    return PreparedRequest(url=url, data=form_data, headers=headers)
 
 
 def parse_response(response: requests.Response) -> dict[str, Any]:
@@ -640,7 +631,6 @@ def main():
                         prepared.url,
                         data=prepared.data,
                         headers=prepared.headers,
-                        cookies=prepared.cookies,
                         timeout=30,
                         verify=True,
                     )
