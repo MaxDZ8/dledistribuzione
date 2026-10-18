@@ -120,44 +120,6 @@ def parse_tokenized_arg(tokenized_str: str) -> Set[str]:
     
     return normalized
 
-
-def get_token_suffixes(tokens: Set[str]) -> str:
-    """
-    Generate filename suffixes from a set of tokens.
-    
-    Suffixes are joined in sorted order for consistency.
-    
-    Args:
-        tokens: Set of normalized token names
-    
-    Returns:
-        str: Suffixes joined with underscores (e.g., 'attiva_imm_attiva_prel')
-    """
-    suffixes = [TOKEN_TO_SUFFIX[token] for token in sorted(tokens)]
-    return "_".join(suffixes)
-
-
-def extract_from_cookie_header(cookie_header: str, key: str) -> str:
-    """
-    Extract a value from an HTTP Cookie header string.
-    
-    Args:
-        cookie_header: Full Cookie header value (key1=val1; key2=val2; ...)
-        key: The cookie name to extract
-    
-    Returns:
-        str: The cookie value
-    
-    Raises:
-        ValueError: If the cookie key is not found
-    """
-    pairs = cookie_header.split("; ")
-    for pair in pairs:
-        if pair.startswith(f"{key}="):
-            return pair[len(f"{key}="):]
-    raise ValueError(f"Cookie '{key}' not found in provided Cookie header")
-
-
 def prompt_for_credentials() -> SessionCredentials:
     """
     Prompt user to provide session credentials from browser DevTools.
