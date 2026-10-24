@@ -107,6 +107,7 @@ Il programma scrive a console (su <em>stdout</em>) una riga per ciascun file cre
 
 # `quarters_to_csv.py`
 Nello scaricare i dati abbiamo avuto una sorpresa sgradita: i dati ottenuti non sono quelli che avremmo potuto scaricare dal sito!
+
 !["Scarica il dettaglio del quarto d'ora"](docimages/edist_dl_quarters.webp)
 
 Attorno a questi file di dettaglio dei quarti d'ora si è aggregata un'aura quasi mistica. Generalmente considerati la sorgente della verità sono in realtà prodotti all'interno della pagina web di e-distribuzione, in locale sulla vostra macchina a seguire lo scaricamento.
@@ -154,3 +155,114 @@ In entrambi i casi
 - la riga d'intestazione è priva di virgolette, come nell'originale;
 - il separatore di campo è `;`
 - il separatore decimale è `,` (italiano)
+
+# `draw_quarters.py`
+
+Trasforma i files ottenuti da `quarters_to_csv.py` in grafici mensili in formato SVG ottimizzati per manipolazioni più semplici.
+
+In sostanza, per ciascuna riga del CSV mensile dei quarti d'ora in ingresso è creato un grafico giornaliero. Ciascuno di questi grafici giornalieri colleziona misurazioni (generalmente l'energia immessa e prelevata) da più file e aggiunge tra l'altro ulteriori informazioni e stime quali produzione attesa, arco solare e condizioni metereologiche.
+
+Un esempio a bassa risoluzione di cosa potreste ottenere:
+
+!["Tre giorni speciali di ottobre 2025"](docimages/2025-10_25-27.svg)
+
+- le barre sono le misure, i dati certi;
+    - su queste non si discute, sono ciò che abbiamo scaricato da e-distribuzione
+- tutto il resto sono sostanzialmente stime, più o meno affidabili.
+
+I grafici mostrati come esempio sono quelli più affinati; nella sezione relativa agli esempi d'esecuzione ne mostrerò le varie versioni. 
+
+Si osservi che i dati di e-distribuzione per gestire il passaggio all'ora invernale usano due righe per lo stesso giorno. Ad esempio la notte tra il 25 ed il 26 ottobre 2025 alle ore 03:00 le lancette degli orologi sono state spostate indietro di un'ora. Ci sono quindi istanze delle ore 02:00. È un guaio che riguarda la scelta infelice di usare l'orologio locale anzichè momenti nel tempo. Non esiste alcuna giornata da 100 quarti d'ora. Idea sinceramente molto buona e che il programma sposa in pieno, riportando i dati coerentemente ai CSV.
+
+## Esecuzione
+
+Per la forma più semplice consiglio partire da:
+
+```
+python3 draw_quarters.py --output-dir directory
+```
+Il programma cercherà di elaborare qualunque file .csv trovi nella cartella d'esecuzione (semplifico: i files "vicini" al .py). Questo produce dei grafici derivanti solo ed unicamente dai file elaborati e che tutto sommato potreste costruire senza troppi problemi anche con un foglio di calcolo. Di seguito parte del grafico di una certa giornata.
+
+!["Parte di una giornata"](docimages/energy_example.png)
+
+Qui vediamo ad esempio esserci un andamento altalenante dell'energia immessa. Per un sistema FV puro non ci sono molte domande da farsi: questi programmi sono stati pensati per investigare anche l'interazione con batterie.
+
+Aggiungendo la coordinata geografica (basta prenderla da google maps) si possono aggiungere alcune informazioni:
+
+
+```
+python3 draw_quarters.py --output-dir with_sun --location '45.xxxxxxxxxxx, 12.xxxxxxxxxx'
+```
+
+Cambia molto l'aspetto dei grafici che sono ora migliorati con
+
+1. orari di alba e tramonto astronomici
+2. arco solare
+3. interpolazione (stima) della copertura nuvolosa ed eventuale pioggia su base oraria.
+    1. Così come fornita da [Open Meteo](https://open-meteo.com/)
+
+La copertura nuvolosa è solo indicativa, un dato grossolano su base oraria e a rinforzare queste idee sia le nuvole (grigie) che la pioggia (blu) scende dall'alto verso il basso con gradini evidenti. A volte i dati sembrano corrispondere abbastanza bene:
+
+!["Produzione impattata dalle nuvole"](docimages/weather_good_match.png)
+
+ma esiste un numero limitato di stazioni meteorologiche, la copertura nuvolosa ha un impatto non-lineare quindi ricordate sempre che per quanto dati storici d'archivio **sono solo indicazioni**!
+
+Ad esempio, la giornata vista per prima è completamente nuvolosa ma evidentemente il dato è inaffidabile visto che c'è stata comunque uno buona produzione:
+
+!["Produzione in una giornata nuvolosa"](docimages/weather_mismatch.png)
+
+**Usate il vostro buon senso.**
+
+> ❤️‍🩹 Non posso mostrarvi un esempio di pioggia.
+>
+> Nei mesi che ho considerato nella scrittura di questo documento (2025-10 ... 2026-04 inclusi) non ha sostanzialmente piovuto se non per pochi pixel qualche giorno. Questo corrisponde ai miei ricordi e alla difficile situazione idraulica che incontriamo sempre più spesso negli anni. 
+> Oggi sappiamo che primavera ed estate furono segnate dalla siccità.
+
+Infine, è possibile aggiungere stime di produzione di uno o più impianti fotovoltaici. Il parametro `--pv` è da indicarsi in una di queste forme:
+
+1. _&lt;azimuth&gt;;&lt;tilt&gt;;&lt;kwp&gt;_
+    1. le informazioni di base di un impianto FV, credo non abbiano bisogno di presentazioni
+2. _&lt;azimuth&gt;;&lt;tilt&gt;;&lt;kwp&gt;;&lt;coDate&gt;_
+    1. aggiungere una data di costruzione abilita il calcolo del _derating_
+    2. è da indicarsi in formato ISO YYYY-MM-DD
+    3. è accettabile omettere il giorno e scrivere YYYY-MM, il programma lo considera equivalente a YYYY-MM-01
+3. _&lt;azimuth&gt;;&lt;tilt&gt;;&lt;kwp&gt;;&lt;coDate&gt;;&lt;label&gt;_
+    1. Nome dell'impianto
+
+Quindi ad esempio per simulare due impianti fotovoltaici:
+
+```
+python3 draw_quarters.py --output-dir final_test --location '45.xxxxxxxxxxx, 12.xxxxxxxxxx' --pv '210;38;5.76;2011-03;Old' --pv '60;38;5.72;2023-09;New'
+```
+
+Crea dei grafici con nuovi archi ad indicare la produzione attesa di ciascun impianto fotovoltaico usando un _derating_ di default dello 0.5%. Ad esempio, il risultato potrebbe essere:
+
+!["Stime di produzione impianti"](docimages/pv_arcs.png)
+
+Si noti che la produzione in questo caso è in kWh, che idealmente dovrebbe allinearsi alla scala usata per le barre. A me però fa strano; preferisco ragionare in termini di potenze instantanee, che mi rende di più l'idea di un comportamento teorico. È possibile mostrare potenze istantanee ricorrendo al parametro `--pv-pp`. L'effetto, nel dettaglio:
+
+| Default (kWh) | Con `--pv-pp` (kW) |
+|----|----|
+|!["Picchi produzione in kWh"](docimages/kwh_peak.svg)|!["Picchi di produzione istantanei"](docimages/instant_kw_peak.svg)|
+
+## Usi avanzati
+
+Il coefficiente di _derating_ è tipicamente oscuro quindi non fa parte dei parametri d'impianto forniti da `--pv` ma è possibile indicarlo tramite il parametro `--pv-derate`. Il valore è una serie di valori numerici separati da `,`. Il valore i-esimo sarà usato per l'impianto i-esimo, sovrascrivendo il valore di derating di default. Si può fornire più o meno numeri di quanti impianti (l'eccesso è ignorato). Inoltre è possibile mantenere il derating di default indicando come valore la stringa vuota, ad esempio: `0.01,,0.008` imposta il derating solo per il primo e il terzo impianto mantenendo quello di mezzo al valore di default. Potrebbe esserci un quarto impianto; non importa.
+
+Come i programmi precedenti, è possibile comporre i comandi. La creazione degli SVG è un'operazione veloce e non dovrebbe essercene bisogno se non magari per limitare il fetching di dati ad esempio da OpenMeteo:
+
+```
+echo "2025-10_attiva_imm.csv\\n2025-10_attiva_prel.csv" | python3 draw_quarters.py --location '45.xxx, 12.xxx' --pv '210;38;5.76;YYYY-MM;Old' --pv '60;38;5.72;YYYY-MM;New' --pv-pp --pv-derate 0.009
+```
+
+Quindi è possibile anche fare tutto in un colpo:
+
+
+```
+python3 dl_quarters.py | python3 quarters_to_csv.py | python3 draw_quarters.py --location '45.xxx, 12.xxx' --pv '210;38;5.76;YYYY-MM;Old' --pv '60;38;5.72;YYYY-MM;New' --pv-pp --pv-derate 0.009
+```
+
+# Fine
+Per me purtroppo il decorso non è stato quello che speravo. In ogni caso vista la situazione - terribile - dalla _data ownership_, chissà quando in Italia ne parleremo sentivo di dover lasciar libero questo lavoro.
+
+Spero vi tornerà utile.

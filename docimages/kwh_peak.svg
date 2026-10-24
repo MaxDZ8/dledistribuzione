@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="185"
+   height="225"
+   viewBox="0 0 37.6172 45.326272"
+   version="1.1"
+   id="svg2824"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2826">
+      <rect
+         x="1.5429687e-05"
+         y="2.0543213e-07"
+         width="4416"
+         height="120"
+         id="rect2826" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath2827">
+      <rect
+         x="1.5429687e-05"
+         y="2.0543213e-07"
+         width="4416"
+         height="120"
+         id="rect2827" />
+    </clipPath>
+  </defs>
+  <g
+     id="g2833"
+     transform="translate(-456.16186,-72.435326)">
+    <path
+       id="polyline1363"
+       clip-path="url(#clipPath2827)"
+       d="m 2615.2619,27.410934 -16.2618,-0.06055 -17.1367,0.345703"
+       transform="translate(-2123.7932,87.911601)"
+       style="opacity:0.85;fill:none;stroke:#63f5ff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3, 2" />
+    <circle
+       cx="475.20685"
+       cy="115.2616"
+       r="2.5"
+       fill="#63f5ff"
+       id="circle1479" />
+    <text
+       x="475.20685"
+       y="99.261604"
+       text-anchor="middle"
+       dominant-baseline="middle"
+       font-size="7px"
+       font-family="sans-serif"
+       fill="#63f5ff"
+       id="text1479">14:00<tspan
+   x="475.20685"
+   dy="10"
+   id="tspan1479">1.13kWh</tspan></text>
+  </g>
+  <g
+     id="g2834"
+     transform="translate(-428.5586,-31.581)">
+    <path
+       id="polyline1364"
+       clip-path="url(#clipPath2826)"
+       style="opacity:0.85;fill:none;stroke:#009dff;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3, 2"
+       d="m 2018.5275,46.965621 -17.5274,-0.236328 -19.0898,0.04687"
+       transform="translate(-1552.8517,4.0500038)" />
+    <circle
+       cx="448.14828"
+       cy="50.780003"
+       r="2.5"
+       fill="#009dff"
+       id="circle1480" />
+    <text
+       x="448.14828"
+       y="34.780003"
+       text-anchor="middle"
+       dominant-baseline="middle"
+       font-size="7px"
+       font-family="sans-serif"
+       fill="#009dff"
+       id="text1480">10:45<tspan
+   x="448.14828"
+   dy="10"
+   id="tspan1480">0.90kWh</tspan></text>
+  </g>
+</svg>
